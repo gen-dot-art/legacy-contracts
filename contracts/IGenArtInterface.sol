@@ -23,6 +23,13 @@ interface IGenArtInterface {
         uint256 _amount
     ) external;
 
+    function updateNonce() external;
+
+    function getRandomChoise(uint256[] memory choises)
+        external
+        view
+        returns (uint256);
+
     function balanceOf(address _owner) external view returns (uint256);
 
     function ownerOf(uint256 _membershipId) external view returns (address);

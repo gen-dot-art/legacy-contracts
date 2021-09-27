@@ -74,6 +74,12 @@ contract('GenArtCollectionDrop', (accounts) => {
     );
   });
 
+  for (let i = 0; i < 20; i++) {
+    const r = await genArtInterface.getRandomChoise(['1', '2']);
+    console.log(i, '-', r);
+    await genArtInterface.updateNone({ from: ower });
+  }
+
   after(async () => {});
 
   it('create collections group', async () => {

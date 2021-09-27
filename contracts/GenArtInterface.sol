@@ -270,12 +270,12 @@ contract GenArtInterface is Ownable {
         returns (uint256)
     {
         if (choises.length == 1) return choises[0];
-        uint256 i = (
+        uint256 i = ((
             uint256(
                 keccak256(abi.encodePacked(block.timestamp, nonce, msg.sender))
             )
-        ) % (choises.length - 1);
+        ) % choises.length) + 1;
 
-        return choises[i];
+        return choises[i - 1];
     }
 }

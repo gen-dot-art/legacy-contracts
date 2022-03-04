@@ -32,7 +32,6 @@ abstract contract Context {
     }
 }
 
-
 /**
  * @dev Contract module which provides a basic access control mechanism, where
  * there is an account (an owner) that can be granted exclusive access to
@@ -48,7 +47,10 @@ abstract contract Context {
 abstract contract Ownable is Context {
     address private _owner;
 
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferred(
+        address indexed previousOwner,
+        address indexed newOwner
+    );
 
     /**
      * @dev Initializes the contract setting the deployer as the initial owner.
@@ -88,7 +90,10 @@ abstract contract Ownable is Context {
      * Can only be called by the current owner.
      */
     function transferOwnership(address newOwner) public virtual onlyOwner {
-        require(newOwner != address(0), "Ownable: new owner is the zero address");
+        require(
+            newOwner != address(0),
+            "Ownable: new owner is the zero address"
+        );
         _setOwner(newOwner);
     }
 
@@ -98,7 +103,6 @@ abstract contract Ownable is Context {
         emit OwnershipTransferred(oldOwner, newOwner);
     }
 }
-
 
 /**
  * @dev Interface of the ERC20 standard as defined in the EIP.
@@ -121,7 +125,9 @@ interface IERC20 {
      *
      * Emits a {Transfer} event.
      */
-    function transfer(address recipient, uint256 amount) external returns (bool);
+    function transfer(address recipient, uint256 amount)
+        external
+        returns (bool);
 
     /**
      * @dev Returns the remaining number of tokens that `spender` will be
@@ -130,7 +136,10 @@ interface IERC20 {
      *
      * This value changes when {approve} or {transferFrom} are called.
      */
-    function allowance(address owner, address spender) external view returns (uint256);
+    function allowance(address owner, address spender)
+        external
+        view
+        returns (uint256);
 
     /**
      * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
@@ -175,13 +184,22 @@ interface IERC20 {
      * @dev Emitted when the allowance of a `spender` for an `owner` is set by
      * a call to {approve}. `value` is the new allowance.
      */
-    event Approval(address indexed owner, address indexed spender, uint256 value);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 value
+    );
 }
+
+/**
+ * Interface to the GEN.ART Membership and Governance Token Contracts
+ */
 
 contract GenArtInterface is Ownable {
     IGenArt private _genArtMembership;
     IERC20 private _genArtToken;
     bool private _genAllowed = false;
+    uint256 nonce;
 
     constructor(address genArtMembershipAddress_) {
         _genArtMembership = IGenArt(genArtMembershipAddress_);
@@ -240,5 +258,24 @@ contract GenArtInterface is Ownable {
         uint256 _amount
     ) public {
         _genArtToken.transferFrom(_from, _to, _amount);
+    }
+
+    function updateNonce() public {
+        nonce++;
+    }
+
+    function getRandomChoise(uint256[] memory choises)
+        public
+        view
+        returns (uint256)
+    {
+        if (choises.length == 1) return choises[0];
+        uint256 i = ((
+            uint256(
+                keccak256(abi.encodePacked(block.timestamp, nonce, msg.sender))
+            )
+        ) % choises.length) + 1;
+
+        return choises[i - 1];
     }
 }
